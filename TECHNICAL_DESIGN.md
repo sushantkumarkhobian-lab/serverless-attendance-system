@@ -10,17 +10,17 @@ Attendly is a serverless employee attendance platform deployed in AWS `us-east-2
 ```mermaid
 flowchart LR
     subgraph Client ["Client Browser (React + Vite)"]
-        UI["Attendly Web UI\n(/login, /employee, /admin)"]
+        UI["Attendly Web UI<br/>(/login, /employee, /admin)"]
         CAM["WebRTC Camera Capture"]
     end
 
     subgraph Edge ["CDN & Static Hosting"]
-        CF["Amazon CloudFront\n(OAC + SPA Fallback)"]
+        CF["Amazon CloudFront<br/>(OAC + SPA Fallback)"]
         S3UI["S3: attendance-system-frontend-ui-12345"]
     end
 
     subgraph Compute ["API & Serverless Compute (us-east-2)"]
-        APIGW["API Gateway HTTP API\n(AttendanceAdminApi: o5d5kar5gl)"]
+        APIGW["API Gateway HTTP API<br/>(AttendanceAdminApi: o5d5kar5gl)"]
         L_LOGIN["Lambda: EmployeeLoginLambda"]
         L_URL["Lambda: GeneratePresignedUrlLambda"]
         L_FACE["Lambda: ProcessFaceCaptureLambda"]
@@ -28,22 +28,30 @@ flowchart LR
     end
 
     subgraph Data ["Storage, AI & Database"]
-        S3BE["S3: attendance-system-backend-storage-12345\n(/employee-photos & /incoming-captures)"]
-        REK["Amazon Rekognition\n(Collection: employee_faces)"]
+        S3BE["S3: attendance-system-backend-storage-12345<br/>(/employee-photos & /incoming-captures)"]
+        REK["Amazon Rekognition<br/>(Collection: employee_faces)"]
         DDB_EMP["DynamoDB: employees"]
         DDB_ATT["DynamoDB: AttendanceTable"]
     end
 
     CF --> S3UI
     UI <-->|HTTPS| CF
-    UI -->|1. POST /login| APIGW --> L_LOGIN <--> DDB_EMP
-    CAM -->|2. POST /generate-presigned-url| APIGW --> L_URL
+    UI -->|1. POST /login| APIGW
+    APIGW --> L_LOGIN
+    L_LOGIN <--> DDB_EMP
+
+    CAM -->|2. POST /generate-presigned-url| APIGW
+    APIGW --> L_URL
     L_URL -.->|Pre-signed PUT URL| CAM
     CAM -->|3. Direct PUT image| S3BE
+
     S3BE -->|4. S3 ObjectCreated Event| L_FACE
     L_FACE <-->|5. SearchFacesByImage| REK
     L_FACE -->|6. Write Clock-In / Clock-Out| DDB_ATT
-    UI -->|7. GET /attendance| APIGW --> L_READ <--> DDB_ATT
+
+    UI -->|7. GET /attendance| APIGW
+    APIGW --> L_READ
+    L_READ <--> DDB_ATT
     DDB_ATT -->|8. Live KPIs & Summary Output| UI
 ```
 
