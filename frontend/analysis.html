@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Attendly | Weekly Analytics</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Arial,sans-serif}
+body{background:#f4f6fb;color:#172033}
+header{background:#172b4d;color:white;padding:22px 5%;display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:14px}.brand-icon{background:#ffffff20;padding:12px;border-radius:12px;font-size:23px}.brand h2{font-size:23px;font-weight:700}.brand p{color:#bdc9dc;font-size:14px;margin-top:3px}
+.header-right{display:flex;align-items:center;gap:28px;flex-wrap:wrap}.main-nav{display:flex;align-items:center;gap:8px}.main-nav a{color:#cbd5e1;text-decoration:none;font-size:14px;font-weight:600;padding:10px 14px;border-radius:9px;transition:background .2s,color .2s}.main-nav a:hover{background:#ffffff18;color:white}.main-nav a.active{color:white;background:#ffffff20}
+.header-status{display:flex;align-items:center;gap:10px;font-size:14px;color:#b8f5d0;white-space:nowrap}.dot{width:10px;height:10px;background:#22c55e;border-radius:50%;animation:pulse 1.5s infinite}@keyframes pulse{50%{box-shadow:0 0 0 7px #22c55e30}}
+main{max-width:1250px;margin:40px auto;padding:0 25px}.page-heading{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;flex-wrap:wrap;margin-bottom:28px}.page-heading h1{font-size:34px;font-weight:750;margin-bottom:9px}.page-heading p{color:#64748b;font-size:16px}.week-controls{display:flex;align-items:flex-end;gap:10px;flex-wrap:wrap}.field{display:flex;flex-direction:column;gap:7px}.field label{color:#475569;font-size:13px;font-weight:650}.field input{height:43px;border:1px solid #dbe2ec;border-radius:9px;padding:0 12px;background:white;color:#172033;font-size:14px;outline:none}.field input:focus{border-color:#3b82f6;box-shadow:0 0 0 3px #3b82f61a}
+.btn{height:43px;border:0;border-radius:9px;padding:0 17px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap}.btn:disabled{opacity:.6;cursor:not-allowed}.btn-primary{background:#2563eb;color:white}.btn-primary:hover:not(:disabled){background:#1d4ed8}.btn-secondary{background:#eff6ff;color:#1d4ed8}.btn-secondary:hover:not(:disabled){background:#dbeafe}
+.week-label{color:#64748b;font-size:13px;margin:-13px 0 22px}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px;margin-bottom:26px}.stat-card{--accent:#2563eb;--tint:#eff6ff;background:white;border:1px solid #e5eaf2;border-top:4px solid var(--accent);padding:21px;border-radius:14px;box-shadow:0 4px 14px #172b4d08}.stat-card.present{--accent:#2563eb;--tint:#eff6ff}.stat-card.ontime{--accent:#16a34a;--tint:#f0fdf4}.stat-card.late{--accent:#ea580c;--tint:#fff7ed}.stat-card.absent{--accent:#dc2626;--tint:#fef2f2}.stat-icon{width:36px;height:36px;display:grid;place-items:center;border-radius:10px;background:var(--tint);color:var(--accent);font-size:18px;font-weight:800;margin-bottom:13px}.stat-label{color:#64748b;font-size:14px;margin-bottom:9px}.stat-value{color:var(--accent);font-size:29px;font-weight:750;min-height:36px}.stat-note{font-size:12px;color:#94a3b8;margin-top:6px}
+.panel{background:white;border:1px solid #e5eaf2;border-radius:16px;padding:24px;box-shadow:0 5px 20px #172b4d0b;margin-bottom:26px}.panel-heading{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:20px}.panel-heading h2{font-size:21px}.panel-heading p{color:#64748b;font-size:13px;margin-top:5px}.charts-grid{display:grid;grid-template-columns:0.9fr 1.4fr;gap:22px}.chart-area{min-width:0}.pie-layout{display:flex;align-items:center;justify-content:center;gap:30px;flex-wrap:wrap;min-height:300px;padding:12px 4px 18px}.pie-stage{width:280px;height:255px;display:grid;place-items:center;position:relative}.pie-chart{width:220px;height:220px;border-radius:50%;position:relative;background:var(--pie-gradient,conic-gradient(#e2e8f0 0 100%));box-shadow:0 10px 28px #172b4d18,0 0 0 8px #f8fafc;transition:background .35s,transform .25s;outline:1px solid #ffffffaa}.pie-chart:hover{transform:scale(1.035)}.pie-chart:after{content:"";position:absolute;inset:0;border-radius:50%;background:linear-gradient(145deg,#ffffff35 0%,transparent 42%,#0f172a12 100%);pointer-events:none}.pie-hole{position:absolute;inset:33%;border-radius:50%;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:25px;line-height:1.05;color:#172b4d;font-weight:800;text-align:center;box-shadow:0 2px 12px #172b4d18}.pie-hole small{font-size:10px;letter-spacing:.11em;text-transform:uppercase;color:#64748b;margin-top:5px}.legend{display:flex;flex-direction:column;gap:14px;min-width:155px;max-width:220px}.legend-item{display:grid;grid-template-columns:12px 1fr auto;align-items:center;gap:10px;color:#475569;font-size:13px;padding:11px 12px;background:#f8fafc;border:1px solid #edf1f6;border-radius:11px}.legend-dot{width:11px;height:11px;border-radius:4px;flex-shrink:0;box-shadow:0 1px 3px #172b4d25}.legend-item strong{margin-left:8px;color:#172033;padding-left:8px;font-size:14px}.legend-item .legend-percent{grid-column:2 / 4;color:#94a3b8;font-size:11px;margin-top:-5px}
+.bar-chart{height:260px;display:flex;align-items:stretch;gap:13px;padding:15px 4px 0;border-bottom:1px solid #e2e8f0}.bar-day{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:9px}.bar-stack{height:205px;width:min(42px,100%);display:flex;flex-direction:column;justify-content:flex-end;border-radius:7px 7px 0 0;overflow:hidden;background:#f1f5f9}.bar-segment{width:100%;min-height:0;transition:height .25s}.bar-present{background:#16a34a}.bar-late{background:#f97316}.bar-absent{background:#dc2626}.bar-day-label{font-size:11px;color:#64748b;white-space:nowrap}.bar-day-total{font-size:11px;font-weight:700;color:#475569;min-height:14px}.chart-legend{display:flex;gap:17px;flex-wrap:wrap;margin-top:16px}.chart-legend .legend-item{font-size:12px}
+.table-wrap{width:100%;overflow-x:auto;border:1px solid #e8edf4;border-radius:11px}table{width:100%;min-width:650px;border-collapse:collapse;text-align:left}thead{background:#f1f5f9}th{color:#475569;font-size:12px;font-weight:750;text-transform:uppercase;letter-spacing:.045em;padding:15px 17px;white-space:nowrap}td{color:#334155;font-size:14px;padding:15px 17px;border-top:1px solid #edf0f5;white-space:nowrap}tbody tr:hover{background:#f8fafc}.employee-id{color:#1d4ed8;font-weight:700}.table-message{text-align:center;padding:38px 18px;color:#94a3b8;font-size:14px}.table-message strong{display:block;color:#475569;font-size:15px;margin-bottom:6px}.last-updated{color:#94a3b8;font-size:12px;margin-top:14px}.notice{padding:13px 15px;border-radius:10px;background:#eff6ff;color:#1e40af;font-size:13px;line-height:1.5;margin-bottom:22px}.error-notice{background:#fef2f2;color:#b91c1c}.loading-spinner{display:inline-block;width:17px;height:17px;border:2px solid #bfdbfe;border-top-color:#2563eb;border-radius:50%;vertical-align:middle;margin-right:8px;animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+footer{text-align:center;padding:25px;color:#94a3b8;font-size:13px}
+@media(max-width:950px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.charts-grid{grid-template-columns:1fr}.pie-layout{min-height:230px}}
+@media(max-width:750px){header{padding:18px}.brand h2{font-size:18px}.header-right{width:100%;justify-content:space-between;gap:12px}.main-nav{flex-wrap:wrap}main{margin:28px auto;padding:0 17px}.page-heading h1{font-size:28px}.panel{padding:17px}}
+@media(max-width:520px){.stats{grid-template-columns:1fr}.header-right{align-items:flex-start;flex-direction:column}.week-controls{width:100%}.week-controls .field{flex:1}.week-controls .btn{flex:1}.pie-layout{gap:5px}.pie-stage{width:245px;height:220px}.pie-chart{width:185px;height:185px}.legend{width:100%;max-width:320px}.bar-chart{gap:6px}.bar-day-label{font-size:10px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><div class="brand-icon">◉</div><div><h2>Attendly</h2><p>Smart Attendance System</p></div></div>
+  <div class="header-right">
+    <nav class="main-nav" aria-label="Main navigation"><a href="index.html">Camera Dashboard</a><a href="records.html">Attendance Records</a><a href="analysis.html" class="active">Weekly Analytics</a></nav>
+    <div class="header-status"><span class="dot"></span><span id="systemStatus">Connecting...</span></div>
+  </div>
+</header>
+<main>
+  <section class="page-heading">
+    <div><h1>Weekly Attendance Analytics</h1><p>Understand attendance patterns and employee participation throughout the week.</p></div>
+    <div class="week-controls"><div class="field"><label for="weekPicker">Choose a date in the week</label><input type="date" id="weekPicker"></div><button class="btn btn-primary" id="refreshButton">↻ Refresh</button></div>
+  </section>
+  <div class="week-label" id="weekLabel">Loading selected week...</div>
+  <div class="notice" id="dataNotice">Analytics are calculated from the attendance records currently returned by your existing Attendance API. An employee is counted as absent only when an Absent record exists in the database.</div>
+
+  <section class="stats" aria-label="Weekly attendance summary">
+    <div class="stat-card present"><div class="stat-icon">▤</div><div class="stat-label">Present Days</div><div class="stat-value" id="presentDays">--</div><div class="stat-note">On-time plus late attendance records</div></div>
+    <div class="stat-card ontime"><div class="stat-icon">✓</div><div class="stat-label">On-Time Days</div><div class="stat-value" id="onTimeDays">--</div><div class="stat-note">Records marked OnTime</div></div>
+    <div class="stat-card late"><div class="stat-icon">!</div><div class="stat-label">Late Days</div><div class="stat-value" id="lateDays">--</div><div class="stat-note">Records marked Late</div></div>
+    <div class="stat-card absent"><div class="stat-icon">×</div><div class="stat-label">Absence Days</div><div class="stat-value" id="absentDays">--</div><div class="stat-note">Records marked Absent</div></div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-heading"><div><h2>Weekly Attendance Distribution</h2><p>Share of recorded employee-days by attendance status.</p></div></div>
+    <div class="charts-grid">
+      <div class="chart-area"><div class="pie-layout"><div class="pie-stage"><div class="pie-chart" id="pieChart"><div class="pie-hole" id="pieTotal">0<small>records</small></div></div></div><div class="legend" id="pieLegend"><div class="legend-item"><span class="legend-dot" style="background:#16a34a"></span>On-Time <strong>0</strong></div><div class="legend-item"><span class="legend-dot" style="background:#f97316"></span>Late <strong>0</strong></div><div class="legend-item"><span class="legend-dot" style="background:#dc2626"></span>Absent <strong>0</strong></div></div></div></div>
+      <div class="chart-area"><div class="panel-heading"><div><h2>Daily Attendance Trend</h2><p>Number of recorded attendance entries each day.</p></div></div><div class="bar-chart" id="dailyChart"><div class="table-message">Waiting for attendance data...</div></div><div class="chart-legend"><div class="legend-item"><span class="legend-dot" style="background:#16a34a"></span>On-Time</div><div class="legend-item"><span class="legend-dot" style="background:#f97316"></span>Late</div><div class="legend-item"><span class="legend-dot" style="background:#dc2626"></span>Absent</div></div></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-heading"><div><h2>Employee-wise Weekly Summary</h2><p>Attendance counts for each employee during the selected week.</p></div></div>
+    <div class="table-wrap"><table><thead><tr><th>Employee ID</th><th>On-Time Days</th><th>Late Days</th><th>Absent Days</th><th>Recorded Days</th></tr></thead><tbody id="employeeTable"><tr><td colspan="5" class="table-message"><span class="loading-spinner"></span>Loading weekly data...</td></tr></tbody></table></div>
+    <div class="last-updated" id="lastUpdated">Last updated: --</div>
+  </section>
+</main>
+<footer>Attendly | Smart Attendance System</footer>
+<script>
+const API_URL = "https://o5d5kar5gl.execute-api.us-east-2.amazonaws.com/attendance";
+const weekPicker = document.getElementById("weekPicker");
+const refreshButton = document.getElementById("refreshButton");
+const systemStatus = document.getElementById("systemStatus");
+const weekLabel = document.getElementById("weekLabel");
+const dataNotice = document.getElementById("dataNotice");
+const employeeTable = document.getElementById("employeeTable");
+const dailyChart = document.getElementById("dailyChart");
+const lastUpdated = document.getElementById("lastUpdated");
+
+function getTodayIST(){
+    const parts = new Intl.DateTimeFormat("en-CA", {timeZone:"Asia/Kolkata", year:"numeric", month:"2-digit", day:"2-digit"}).formatToParts(new Date());
+    const values = Object.fromEntries(parts.map(part => [part.type, part.value]));
+    return `${values.year}-${values.month}-${values.day}`;
+}
+function parseISODate(value){
+    const [year, month, day] = value.split("-").map(Number);
+    return new Date(Date.UTC(year, month - 1, day));
+}
+function toISODate(date){return `${date.getUTCFullYear()}-${String(date.getUTCMonth()+1).padStart(2,"0")}-${String(date.getUTCDate()).padStart(2,"0")}`;}
+function getWeekDates(dateValue){
+    const selected = parseISODate(dateValue);
+    const day = selected.getUTCDay();
+    const mondayOffset = day === 0 ? -6 : 1 - day;
+    const monday = new Date(selected);
+    monday.setUTCDate(monday.getUTCDate() + mondayOffset);
+    return Array.from({length:7}, (_, index) => {
+        const date = new Date(monday);
+        date.setUTCDate(monday.getUTCDate() + index);
+        return toISODate(date);
+    });
+}
+function normaliseStatus(status){
+    const value = String(status || "").trim().toLowerCase();
+    if(value === "ontime" || value === "on time" || value === "present") return "OnTime";
+    if(value === "late") return "Late";
+    if(value === "absent") return "Absent";
+    return "Unknown";
+}
+function formatShortDate(value){
+    const [, month, day] = value.split("-");
+    return `${day}/${month}`;
+}
+function escapeHTML(value){
+    return String(value ?? "").replace(/[&<>"']/g, character => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"})[character]);
+}
+function setSummary(records){
+    const counts = {OnTime:0, Late:0, Absent:0};
+    records.forEach(record => {const status = normaliseStatus(record.status); if(counts[status] !== undefined) counts[status]++;});
+    const present = counts.OnTime + counts.Late;
+    document.getElementById("presentDays").textContent = present;
+    document.getElementById("onTimeDays").textContent = counts.OnTime;
+    document.getElementById("lateDays").textContent = counts.Late;
+    document.getElementById("absentDays").textContent = counts.Absent;
+    return {...counts, present, total:counts.OnTime + counts.Late + counts.Absent};
+}
+function renderPie(counts){
+    const total = counts.total;
+    const chart = document.getElementById("pieChart");
+    if(!total){chart.style.setProperty("--pie-gradient", "conic-gradient(#e2e8f0 0 100%)");}
+    else{
+        const onTimeEnd = counts.OnTime / total * 100;
+        const lateEnd = (counts.OnTime + counts.Late) / total * 100;
+        chart.style.setProperty("--pie-gradient", `conic-gradient(#16a34a 0 ${onTimeEnd}%, #f97316 ${onTimeEnd}% ${lateEnd}%, #dc2626 ${lateEnd}% 100%)`);
+    }
+    document.getElementById("pieTotal").innerHTML = `${total}<small>records</small>`;
+    document.getElementById("pieLegend").innerHTML = [
+        ["On-Time", counts.OnTime, "#16a34a"], ["Late", counts.Late, "#f97316"], ["Absent", counts.Absent, "#dc2626"]
+    ].map(([label, value, color]) => {
+        const percentage = total ? (value / total * 100).toFixed(1) : "0.0";
+        return `<div class="legend-item"><span class="legend-dot" style="background:${color}"></span><span>${label}</span><strong>${value}</strong><span class="legend-percent">${percentage}% of records</span></div>`;
+    }).join("");
+}
+function renderDailyChart(dates, recordsByDate){
+    const daily = dates.map(date => {
+        const counts = {OnTime:0, Late:0, Absent:0};
+        (recordsByDate[date] || []).forEach(record => {const status = normaliseStatus(record.status); if(counts[status] !== undefined) counts[status]++;});
+        return {date, ...counts, total:counts.OnTime + counts.Late + counts.Absent};
+    });
+    const max = Math.max(1, ...daily.map(day => day.total));
+    dailyChart.innerHTML = daily.map(day => {
+        const onTimeHeight = day.OnTime / max * 100;
+        const lateHeight = day.Late / max * 100;
+        const absentHeight = day.Absent / max * 100;
+        return `<div class="bar-day" title="${day.date}: On-Time ${day.OnTime}, Late ${day.Late}, Absent ${day.Absent}"><div class="bar-day-total">${day.total}</div><div class="bar-stack"><div class="bar-segment bar-absent" style="height:${absentHeight}%"></div><div class="bar-segment bar-late" style="height:${lateHeight}%"></div><div class="bar-segment bar-present" style="height:${onTimeHeight}%"></div></div><div class="bar-day-label">${["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][parseISODate(day.date).getUTCDay()]}</div></div>`;
+    }).join("");
+}
+function renderEmployeeTable(records){
+    const employees = {};
+    records.forEach(record => {
+        const id = String(record.employee_id || "Unknown");
+        if(!employees[id]) employees[id] = {OnTime:0, Late:0, Absent:0, days:0};
+        const status = normaliseStatus(record.status);
+        if(employees[id][status] !== undefined){employees[id][status]++; employees[id].days++;}
+    });
+    const ids = Object.keys(employees).sort((a,b)=>a.localeCompare(b));
+    if(!ids.length){employeeTable.innerHTML = `<tr><td colspan="5" class="table-message"><strong>No attendance records found</strong>No records were returned for this week.</td></tr>`;return;}
+    employeeTable.innerHTML = ids.map(id => {
+        const item = employees[id];
+        return `<tr><td class="employee-id">${escapeHTML(id)}</td><td>${item.OnTime}</td><td>${item.Late}</td><td>${item.Absent}</td><td><strong>${item.days}</strong></td></tr>`;
+    }).join("");
+}
+async function loadWeeklyAnalytics(){
+    const selectedDate = weekPicker.value || getTodayIST();
+    const dates = getWeekDates(selectedDate);
+    const today = getTodayIST();
+    const availableDates = dates.filter(date => date <= today);
+    const monday = dates[0], sunday = dates[6];
+    weekLabel.textContent = `Week: ${formatShortDate(monday)} – ${formatShortDate(sunday)} (${monday} to ${sunday})`;
+    refreshButton.disabled = true;
+    systemStatus.textContent = "Fetching analytics...";
+    employeeTable.innerHTML = `<tr><td colspan="5" class="table-message"><span class="loading-spinner"></span>Fetching weekly attendance...</td></tr>`;
+    dailyChart.innerHTML = `<div class="table-message">Loading...</div>`;
+    try{
+        const responses = await Promise.all(availableDates.map(async date => {
+            const response = await fetch(`${API_URL}?date=${encodeURIComponent(date)}`, {method:"GET", headers:{"Accept":"application/json"}, cache:"no-store"});
+            let body;
+            try{body = await response.json();}catch(_){body = {};}
+            if(!response.ok) throw new Error(body.error || `API request failed for ${date} (HTTP ${response.status})`);
+            if(!Array.isArray(body.items)) throw new Error(`Unexpected API response for ${date}: expected an items array`);
+            return {date, items:body.items};
+        }));
+        const recordsByDate = Object.fromEntries(responses.map(result => [result.date, result.items]));
+        const allRecords = responses.flatMap(result => result.items);
+        const counts = setSummary(allRecords);
+        renderPie(counts);
+        renderDailyChart(dates, recordsByDate);
+        renderEmployeeTable(allRecords);
+        const futureDays = dates.length - availableDates.length;
+        dataNotice.className = "notice";
+        dataNotice.textContent = futureDays > 0
+            ? `Showing live records from ${availableDates.length} elapsed day(s) of this week. Future dates are excluded. Absences appear only when an Absent record has been written to the database.`
+            : "Showing live records from all seven dates in the selected week. Absences appear only when an Absent record has been written to the database.";
+        systemStatus.textContent = "Analytics updated";
+        lastUpdated.textContent = `Last updated: ${new Date().toLocaleString("en-IN", {timeZone:"Asia/Kolkata"})} IST`;
+    }catch(error){
+        console.error("Weekly analytics error:", error);
+        ["presentDays","onTimeDays","lateDays","absentDays"].forEach(id => document.getElementById(id).textContent = "--");
+        document.getElementById("pieTotal").innerHTML = `--<small>records</small>`;
+        document.getElementById("pieChart").style.setProperty("--pie-gradient", "conic-gradient(#e2e8f0 0 100%)");
+        document.getElementById("pieLegend").innerHTML = "<div class='legend-item'>Unable to load chart data</div>";
+        dailyChart.innerHTML = `<div class="table-message"><strong>Could not load daily attendance</strong>${escapeHTML(error.message)}</div>`;
+        employeeTable.innerHTML = `<tr><td colspan="5" class="table-message"><strong>Unable to load weekly analytics</strong>${escapeHTML(error.message)}</td></tr>`;
+        dataNotice.className = "notice error-notice";
+        dataNotice.textContent = `The Attendance API could not return the selected week's data. Check the browser console and API response. Details: ${error.message}`;
+        systemStatus.textContent = "API unavailable";
+    }finally{refreshButton.disabled = false;}
+}
+weekPicker.value = getTodayIST();
+weekPicker.addEventListener("change", loadWeeklyAnalytics);
+refreshButton.addEventListener("click", loadWeeklyAnalytics);
+loadWeeklyAnalytics();
+</script>
+</body>
+</html>
